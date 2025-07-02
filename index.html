@@ -1,33 +1,45 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>核對小幫手</title>
+  <title>核對小幫手</title>
 </head>
 <body>
-    <h1>Emma 核對小幫手 🔍</h1>
-    <form method="post" enctype="multipart/form-data">
-        <p>📷 上傳圖片：</p>
-        <input type="file" name="image"><br><br>
+  <h1>Emma 核對小幫手 🔍</h1>
+  <form method="post" enctype="multipart/form-data">
+    <p>📷 上傳圖片： </p>
+    <input type="file" name="image"><br><br>
 
-        <p>📝 貼上人工輸入內容：</p>
-        <textarea name="text" rows="10" cols="50" placeholder="例如：BA13 每月72單位..."></textarea><br><br>
+    <p>📝 貼上人工輸入內容：</p>
+    <textarea name="text" rows="10" cols="50" placeholder="例如：BA13 每月72單位…"></textarea><br><br>
 
-        <button type="submit">立即比對</button>
-    </form>
+    <button type="submit">立即比對</button>
+  </form>
 
-    {% if result %}
-        <h2>🔍 比對結果：</h2>
-        <table border="1">
-            <tr><th>服務代碼</th><th>圖片數量</th><th>人工輸入</th><th>結果</th></tr>
-            {% for row in result %}
-            <tr>
-                <td>{{ row.code }}</td>
-                <td>{{ row.expected }}</td>
-                <td>{{ row.typed }}</td>
-                <td>{{ "✅ 一致" if row.match else "❌ 不符" }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+  {% if result %}
+    <h2>🔎 比對結果：</h2>
+    <table border="1">
+      <tr>
+        <th>服務代碼</th>
+        <th>圖片數量</th>
+        <th>人工輸入</th>
+        <th>結果</th>
+      </tr>
+      {% for row in result %}
+      <tr>
+        <td>{{ row.code }}</td>
+        <td>{{ row.expected }}</td>
+        <td>{{ row.typed }}</td>
+        <td>
+          {% if row.match %}
+            ✅ 一致
+          {% else %}
+            ❌ 不符
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
 </body>
 </html>
