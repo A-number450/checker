@@ -1,6 +1,6 @@
 import os
+import requests
 from flask import Flask, render_template, request
-import pytesseract
 from PIL import Image
 
 app = Flask(__name__)
@@ -12,9 +12,24 @@ def index():
         image = request.files['image']
         user_text = request.form['text']
 
-        # 圖片 OCR 處理
-        image_data = Image.open(image.stream)
-        ocr_result = pytesseract.image_to_string(image_data, lang='chi_tra+eng')
+        # 將圖片儲存為暫存檔案
+        image_path = "temp.png"
+        image.save(image_path)
+
+        # 上傳至 ocr.space API 辨識文字
+        api_key = "helloworld"  # 免費帳號 API key
+        with open(image_path, "rb") as f:
+            r = requests.post(
+                "https://api.ocr.space/parse/image",
+                files={"filename": f},
+                data={"apikey": api_key, "language": "cht"}
+            )
+        os.remove(image_path)  # 刪掉暫存圖片
+
+        try:
+            ocr_result = r.json()['ParsedResults'][0]['ParsedText']
+        except Exception:
+            ocr_result = ""
 
         # 從圖片文字中擷取代碼與數量
         image_items = {}
@@ -57,8 +72,6 @@ def index():
             })
 
     return render_template('index.html', result=result)
-
-    import os
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
